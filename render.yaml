@@ -64,6 +64,36 @@ services:
           property: password
       - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
         value: org.postgresql.Driver
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE
+        value: "20"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_INSERTS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_UPDATES
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_VERSIONED_DATA
+        value: "true"
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "10"
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: "5"
+      - key: SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT
+        value: "300000"
+      - key: SPRING_DATASOURCE_HIKARI_MAX_LIFETIME
+        value: "1200000"
+      - key: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
+        value: "20000"
+      - key: SERVER_SERVLET_SESSION_TIMEOUT
+        value: "30m"
+      - key: SERVER_SERVLET_SESSION_COOKIE_SECURE
+        value: "true"
+      - key: SERVER_SERVLET_SESSION_COOKIE_HTTP_ONLY
+        value: "true"
+      - key: SERVER_SERVLET_SESSION_COOKIE_SAME_SITE
+        value: strict
+      - key: LOGGING_LEVEL_ORG_HIBERNATE_SQL
+        value: WARN
+      - key: LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER
+        value: WARN
 
 databases:
   - name: portfolio-tracker-db
