@@ -11,21 +11,42 @@ public class DotEnvConfig {
     @PostConstruct
     public void loadDotEnv() {
         try {
-            Dotenv dotenv = Dotenv.configure()
-                    .directory("../")
-                    .ignoreIfMalformed()
-                    .ignoreIfMissing()
-                    .load();
+            // Try multiple paths to find .env file
+            String[] paths = {"./", "../", "../../", "./backend/", "../backend/"};
+            Dotenv dotenv = null;
             
-            // Load environment variables from .env file
-            dotenv.entries().forEach(entry -> {
-                if (System.getenv(entry.getKey()) == null) {
-                    System.setProperty(entry.getKey(), entry.getValue());
+            for (String path : paths) {
+                try {
+                    dotenv = Dotenv.configure()
+                            .directory(path)
+                            .ignoreIfMalformed()
+                            .ignoreIfMissing()
+                            .load();
+                    if (dotenv.entries().size() > 0) {
+                        System.out.println("Found .env file at path: " + path);
+                        break;
+                    }
+                } catch (Exception e) {
+                    // Try next path
                 }
-            });
+            }
+            
+            if (dotenv != null && dotenv.entries().size() > 0) {
+                // Load environment variables from .env file
+                dotenv.entries().forEach(entry -> {
+                    if (System.getenv(entry.getKey()) == null) {
+                        System.setProperty(entry.getKey(), entry.getValue());
+                        System.out.println("Loaded from .env: " + entry.getKey() + " = " + 
+                            (entry.getKey().contains("SECRET") || entry.getKey().contains("PASSWORD") ? "***" : entry.getValue()));
+                    }
+                });
+                System.out.println("Successfully loaded " + dotenv.entries().size() + " environment variables from .env file");
+            } else {
+                System.out.println("No .env file found in any of the searched paths");
+            }
         } catch (Exception e) {
-            // Ignore if .env file is not found
-            System.out.println("No .env file found, using system environment variables");
+            System.out.println("Error loading .env file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
