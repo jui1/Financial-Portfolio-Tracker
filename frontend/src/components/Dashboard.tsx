@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import type { Portfolio, PortfolioDetails } from '../services/api';
+import type { Portfolio } from '../services/api';
 import { portfolioAPI } from '../services/api';
-import { Plus, TrendingUp, TrendingDown, DollarSign, PieChart } from 'lucide-react';
+import { Plus, PieChart } from 'lucide-react';
 import PortfolioCard from './PortfolioCard';
 import CreatePortfolioModal from './CreatePortfolioModal';
 

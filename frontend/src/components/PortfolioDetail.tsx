@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { PortfolioDetails, Asset } from '../services/api';
-import { portfolioAPI, stockAPI } from '../services/api';
+import type { PortfolioDetails } from '../services/api';
+import { portfolioAPI } from '../services/api';
 import { ArrowLeft, Plus, Trash2, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import AddAssetModal from './AddAssetModal';
 import PortfolioChart from './PortfolioChart';

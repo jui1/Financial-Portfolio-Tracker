@@ -9,7 +9,7 @@ interface PortfolioCardProps {
   onUpdate: () => void;
 }
 
-const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio, onUpdate }) => {
+const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio }) => {
   const [details, setDetails] = useState<PortfolioDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
