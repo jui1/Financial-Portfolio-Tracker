@@ -4,15 +4,15 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Copy Maven files
-COPY backend/pom.xml .
-COPY backend/.mvn .mvn
-COPY backend/mvnw .
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
 
 # Download dependencies
 RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Copy source code
-COPY backend/src src
+COPY src src
 
 # Build the application
 RUN ./mvnw clean package -DskipTests
@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 # Copy the built JAR from build stage
 COPY --from=build /app/target/portfolio-tracker-backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Copy .env file for production
-COPY .env .env
+# Copy .env file for production (from parent directory)
+COPY ../.env .env
 
 # Expose port
 EXPOSE 8087
