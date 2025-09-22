@@ -12,7 +12,7 @@ public class DotEnvConfig {
     public void loadDotEnv() {
         try {
             Dotenv dotenv = Dotenv.configure()
-                    .directory("./")
+                    .directory("../")
                     .ignoreIfMalformed()
                     .ignoreIfMissing()
                     .load();
