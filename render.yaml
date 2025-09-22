@@ -9,6 +9,7 @@ services:
     buildCommand: ""
     startCommand: ""
     healthCheckPath: /actuator/health
+    rootDir: .
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
