@@ -50,6 +50,20 @@ services:
         value: INFO
       - key: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
         value: WARN
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: portfolio-tracker-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: portfolio-tracker-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: portfolio-tracker-db
+          property: password
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
 
 databases:
   - name: portfolio-tracker-db
