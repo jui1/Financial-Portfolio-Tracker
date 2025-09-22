@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import type { AssetRequest } from '../services/api';
 import { portfolioAPI, stockAPI } from '../services/api';
-import { X, Search } from 'lucide-react';
+import { X, Search, AlertCircle } from 'lucide-react';
 
 interface AddAssetModalProps {
   portfolioId: number;
   onClose: () => void;
   onSuccess: () => void;
+}
+
+interface ValidationErrors {
+  tickerSymbol?: string;
+  quantity?: string;
+  purchasePrice?: string;
 }
 
 const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onSuccess }) => {
@@ -17,18 +23,91 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [stockInfo, setStockInfo] = useState<any>(null);
   const [searching, setSearching] = useState(false);
 
+  // Validation functions
+  const validateTickerSymbol = (tickerSymbol: string): string | undefined => {
+    if (!tickerSymbol.trim()) {
+      return 'Ticker symbol is required';
+    }
+    if (tickerSymbol.length < 1) {
+      return 'Ticker symbol must be at least 1 character';
+    }
+    if (tickerSymbol.length > 10) {
+      return 'Ticker symbol must be less than 10 characters';
+    }
+    if (!/^[A-Z0-9.-]+$/.test(tickerSymbol.toUpperCase())) {
+      return 'Ticker symbol can only contain letters, numbers, dots, and hyphens';
+    }
+    return undefined;
+  };
+
+  const validateQuantity = (quantity: number): string | undefined => {
+    if (quantity <= 0) {
+      return 'Quantity must be greater than 0';
+    }
+    if (quantity < 0.01) {
+      return 'Quantity must be at least 0.01';
+    }
+    return undefined;
+  };
+
+  const validatePurchasePrice = (purchasePrice: number): string | undefined => {
+    if (purchasePrice <= 0) {
+      return 'Purchase price must be greater than 0';
+    }
+    if (purchasePrice < 0.01) {
+      return 'Purchase price must be at least 0.01';
+    }
+    return undefined;
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+    
+    const tickerError = validateTickerSymbol(formData.tickerSymbol);
+    if (tickerError) errors.tickerSymbol = tickerError;
+
+    const quantityError = validateQuantity(formData.quantity);
+    if (quantityError) errors.quantity = quantityError;
+
+    const priceError = validatePurchasePrice(formData.purchasePrice);
+    if (priceError) errors.purchasePrice = priceError;
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError('');
+    setValidationErrors({});
 
     try {
       await portfolioAPI.addAsset(portfolioId, formData);
       onSuccess();
     } catch (err: any) {
+      // Handle server validation errors
+      if (err.response?.data && typeof err.response.data === 'object') {
+        const serverErrors: ValidationErrors = {};
+        Object.keys(err.response.data).forEach(key => {
+          if (key === 'tickerSymbol') serverErrors.tickerSymbol = err.response.data[key];
+          if (key === 'quantity') serverErrors.quantity = err.response.data[key];
+          if (key === 'purchasePrice') serverErrors.purchasePrice = err.response.data[key];
+        });
+        if (Object.keys(serverErrors).length > 0) {
+          setValidationErrors(serverErrors);
+          return;
+        }
+      }
       setError(err.response?.data?.message || 'Failed to add asset');
     } finally {
       setLoading(false);
@@ -41,6 +120,14 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
       ...formData,
       [name]: name === 'tickerSymbol' ? value.toUpperCase() : parseFloat(value) || 0,
     });
+
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[name as keyof ValidationErrors]) {
+      setValidationErrors({
+        ...validationErrors,
+        [name]: undefined,
+      });
+    }
   };
 
   const handleSearchStock = async () => {
@@ -87,7 +174,9 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
                 id="tickerSymbol"
                 name="tickerSymbol"
                 required
-                className="flex-1 input-field rounded-r-none"
+                className={`flex-1 input-field rounded-r-none ${
+                  validationErrors.tickerSymbol ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                }`}
                 placeholder="e.g., AAPL"
                 value={formData.tickerSymbol}
                 onChange={handleChange}
@@ -105,6 +194,12 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
                 )}
               </button>
             </div>
+            {validationErrors.tickerSymbol && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {validationErrors.tickerSymbol}
+              </div>
+            )}
           </div>
 
           {stockInfo && (
@@ -128,13 +223,21 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
               id="quantity"
               name="quantity"
               required
-              min="0"
+              min="0.01"
               step="0.01"
-              className="input-field mt-1"
+              className={`input-field mt-1 ${
+                validationErrors.quantity ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+              }`}
               placeholder="Enter quantity"
               value={formData.quantity || ''}
               onChange={handleChange}
             />
+            {validationErrors.quantity && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {validationErrors.quantity}
+              </div>
+            )}
           </div>
 
           <div>
@@ -146,13 +249,21 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ portfolioId, onClose, onS
               id="purchasePrice"
               name="purchasePrice"
               required
-              min="0"
+              min="0.01"
               step="0.01"
-              className="input-field mt-1"
+              className={`input-field mt-1 ${
+                validationErrors.purchasePrice ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+              }`}
               placeholder="Enter purchase price"
               value={formData.purchasePrice || ''}
               onChange={handleChange}
             />
+            {validationErrors.purchasePrice && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {validationErrors.purchasePrice}
+              </div>
+            )}
           </div>
 
           {error && (
