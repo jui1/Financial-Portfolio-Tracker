@@ -2,7 +2,7 @@ services:
   - type: web
     name: portfolio-tracker-backend
     env: docker
-    dockerfilePath: ./backend/Dockerfile.prod
+    dockerfilePath: ./backend/Dockerfile
     plan: free
     region: oregon
     branch: main
