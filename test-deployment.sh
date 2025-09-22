@@ -70,3 +70,4 @@ echo "🎉 Deployment test completed!"
 echo "🌐 Frontend: http://localhost"
 echo "🔧 Backend: http://localhost:8087/api"
 echo "💚 Health: http://localhost:8087/actuator/health"
+

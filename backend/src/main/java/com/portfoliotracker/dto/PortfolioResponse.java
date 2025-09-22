@@ -110,3 +110,4 @@ public class PortfolioResponse {
         this.totalGainLossPercentage = totalGainLossPercentage;
     }
 }
+

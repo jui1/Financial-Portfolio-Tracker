@@ -137,4 +137,14 @@ public class AuthController {
         
         return ResponseEntity.ok(userInfo);
     }
+    
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(Map.of("message", "API is working!", "timestamp", System.currentTimeMillis()));
+    }
+    
+    @GetMapping("/")
+    public ResponseEntity<?> root() {
+        return ResponseEntity.ok(Map.of("message", "Portfolio Tracker API", "status", "running", "timestamp", System.currentTimeMillis()));
+    }
 }

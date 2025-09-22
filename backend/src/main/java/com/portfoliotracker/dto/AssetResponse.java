@@ -109,3 +109,4 @@ public class AssetResponse {
         this.updatedAt = updatedAt;
     }
 }
+
