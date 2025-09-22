@@ -27,7 +27,7 @@ ALPHA_VANTAGE_API_KEY=demo
 ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co/query
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177,http://localhost:5178,http://localhost:5179,http://localhost:5180,https://portfolio-tracker-1-l128.onrender.com
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177,http://localhost:5178,http://localhost:5179,http://localhost:5180,https://portfolio-tracker-latest-2.onrender.com
 
 # JPA Configuration
 SPRING_JPA_HIBERNATE_DDL_AUTO=update
