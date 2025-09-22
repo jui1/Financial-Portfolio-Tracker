@@ -5,6 +5,7 @@ import com.portfoliotracker.dto.PortfolioRequest;
 import com.portfoliotracker.dto.PortfolioResponse;
 import com.portfoliotracker.entity.Portfolio;
 import com.portfoliotracker.entity.User;
+import com.portfoliotracker.exception.PortfolioNotFoundException;
 import com.portfoliotracker.service.PortfolioService;
 import com.portfoliotracker.service.UserService;
 import jakarta.validation.Valid;
@@ -49,8 +50,12 @@ public class PortfolioController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPortfolio(@PathVariable Long id, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
-        PortfolioResponse portfolio = portfolioService.getPortfolioWithDetails(id, user);
-        return ResponseEntity.ok(portfolio);
+        try {
+            PortfolioResponse portfolio = portfolioService.getPortfolioWithDetails(id, user);
+            return ResponseEntity.ok(portfolio);
+        } catch (PortfolioNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     
     @PostMapping("/{id}/assets")
@@ -59,6 +64,8 @@ public class PortfolioController {
         try {
             portfolioService.addAssetToPortfolio(id, request, user);
             return ResponseEntity.ok(Map.of("message", "Asset added successfully"));
+        } catch (PortfolioNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

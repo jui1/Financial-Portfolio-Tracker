@@ -7,6 +7,7 @@ import com.portfoliotracker.dto.PortfolioResponse;
 import com.portfoliotracker.entity.Portfolio;
 import com.portfoliotracker.entity.PortfolioAsset;
 import com.portfoliotracker.entity.User;
+import com.portfoliotracker.exception.PortfolioNotFoundException;
 import com.portfoliotracker.repository.PortfolioAssetRepository;
 import com.portfoliotracker.repository.PortfolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class PortfolioService {
     
     public PortfolioAsset addAssetToPortfolio(Long portfolioId, AssetRequest request, User user) {
         Portfolio portfolio = getPortfolioById(portfolioId, user)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new PortfolioNotFoundException(portfolioId));
         
         // Check if asset already exists
         Optional<PortfolioAsset> existingAsset = portfolioAssetRepository
@@ -79,7 +80,7 @@ public class PortfolioService {
     
     public void removeAssetFromPortfolio(Long portfolioId, Long assetId, User user) {
         Portfolio portfolio = getPortfolioById(portfolioId, user)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new PortfolioNotFoundException(portfolioId));
         
         PortfolioAsset asset = portfolioAssetRepository.findById(assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
@@ -93,7 +94,7 @@ public class PortfolioService {
     
     public PortfolioResponse getPortfolioWithDetails(Long portfolioId, User user) {
         Portfolio portfolio = getPortfolioById(portfolioId, user)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new PortfolioNotFoundException(portfolioId));
         
         List<PortfolioAsset> assets = portfolioAssetRepository.findByPortfolio(portfolio);
         
