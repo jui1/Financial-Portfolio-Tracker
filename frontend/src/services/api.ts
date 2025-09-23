@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://portfolio-tracker-latest-2.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://portfolio-tracker-03.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
